@@ -16,18 +16,20 @@ class MyApp extends StatelessWidget {
       theme: ThemeData(
         primarySwatch: Colors.purple,
         accentColor: Colors.amber,
-        fontFamily: 'OpenSans',
+        // errorColor: Colors.red[400],
+        fontFamily: 'Quicksand',
         textTheme: ThemeData.light().textTheme.copyWith(
               bodyText1: TextStyle(
                 fontFamily: 'OpenSans',
                 fontWeight: FontWeight.bold,
                 fontSize: 18,
               ),
+              button: TextStyle(color: Colors.white),
             ),
         appBarTheme: AppBarTheme(
           textTheme: ThemeData.light().textTheme.copyWith(
                 headline6: TextStyle(
-                  fontFamily: 'Quicksand',
+                  fontFamily: 'OpenSans',
                   fontSize: 20,
                   fontWeight: FontWeight.bold,
                 ),
@@ -50,7 +52,38 @@ class MyHomePage extends StatefulWidget {
 }
 
 class _MyHomePageState extends State<MyHomePage> {
-  final List<Transaction> _userTransactions = [];
+  final List<Transaction> _userTransactions = [
+    Transaction(
+      title: 'HaHa',
+      amount: 15.46,
+      date: DateTime.now().subtract(Duration(days: 3)),
+      id: '1',
+    ),
+    Transaction(
+      title: 'FaFa',
+      amount: 10.86,
+      date: DateTime.now().subtract(Duration(days: 3)),
+      id: '2',
+    ),
+    Transaction(
+      title: 'AaHa',
+      amount: 65.362,
+      date: DateTime.now().subtract(Duration(days: 4)),
+      id: '3',
+    ),
+    Transaction(
+      title: 'GoGo',
+      amount: 11.23,
+      date: DateTime.now().subtract(Duration(days: 5)),
+      id: '4',
+    ),
+    Transaction(
+      title: 'SoSo',
+      amount: 34.63,
+      date: DateTime.now().subtract(Duration(days: 2)),
+      id: '5',
+    ),
+  ];
 
   List<Transaction> get _recentTransactions {
     return _userTransactions.where((tx) {
@@ -62,12 +95,10 @@ class _MyHomePageState extends State<MyHomePage> {
     }).toList();
   }
 
-  void _addNewTransaction(String txTitle, double txAmount) {
+  void _addNewTransaction(
+      String txTitle, double txAmount, DateTime chosenDate) {
     final newTx = Transaction(
-        title: txTitle,
-        amount: txAmount,
-        date: DateTime.now(),
-        id: Uuid().v1());
+        title: txTitle, amount: txAmount, date: chosenDate, id: Uuid().v1());
 
     setState(() {
       _userTransactions.add(newTx);
@@ -86,6 +117,10 @@ class _MyHomePageState extends State<MyHomePage> {
         });
   }
 
+  void _deleteTransaction(String id) {
+    setState(() => _userTransactions.removeWhere((tx) => tx.id == id));
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -99,16 +134,16 @@ class _MyHomePageState extends State<MyHomePage> {
               Icons.add,
             ),
             onPressed: () => _startAddNewTransaction(context),
-          )
+          ),
         ],
       ),
       body: SingleChildScrollView(
         child: Column(
-          // mainAxisAlignment: MainAxisAlignment.start,
+          mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.stretch,
           children: [
             Chart(_recentTransactions),
-            TransactionList(_userTransactions),
+            TransactionList(_userTransactions, _deleteTransaction),
           ],
         ),
       ),

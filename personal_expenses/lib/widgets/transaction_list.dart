@@ -4,9 +4,11 @@ import 'package:intl/intl.dart';
 import '../models/transaction.dart';
 
 class TransactionList extends StatelessWidget {
-  TransactionList(this.transactions);
+  TransactionList(this.transactions, this.deleteTx);
 
   final List<Transaction> transactions;
+  final Function deleteTx;
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -31,48 +33,33 @@ class TransactionList extends StatelessWidget {
               ],
             )
           : ListView.builder(
-              itemBuilder: (cxt, index) {
+              itemBuilder: (ctx, index) {
                 return Card(
-                  elevation: 2,
-                  child: Row(children: [
-                    Container(
-                      margin: EdgeInsets.symmetric(
-                        vertical: 10,
-                        horizontal: 15,
-                      ),
-                      decoration: BoxDecoration(
-                        border: Border.all(
-                          color: Theme.of(context).primaryColor,
-                          width: 2,
+                  margin: EdgeInsets.symmetric(vertical: 8, horizontal: 5),
+                  elevation: 4,
+                  child: ListTile(
+                    leading: CircleAvatar(
+                      radius: 30,
+                      child: Padding(
+                        padding: const EdgeInsets.all(8.0),
+                        child: FittedBox(
+                          child: Text('\$${transactions[index].amount}'),
                         ),
                       ),
-                      child: Text(
-                        '\$${transactions[index].amount.toStringAsFixed(2)}',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 20,
-                          color: Theme.of(context).primaryColor,
-                        ),
-                      ),
-                      padding: EdgeInsets.all(10),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          transactions[index].title,
-                          style: Theme.of(context).textTheme.bodyText1,
-                        ),
-                        Text(
-                          DateFormat('yyyy/MM/dd')
-                              .format(transactions[index].date),
-                          style: TextStyle(
-                            color: Colors.grey,
-                          ),
-                        ),
-                      ],
+                    title: Text(
+                      transactions[index].title,
+                      style: Theme.of(context).textTheme.bodyText1,
                     ),
-                  ]),
+                    subtitle: Text(
+                      DateFormat.yMMMd().format(transactions[index].date),
+                    ),
+                    trailing: IconButton(
+                      icon: Icon(Icons.delete),
+                      color: Theme.of(context).errorColor,
+                      onPressed: () => deleteTx(transactions[index].id),
+                    ),
+                  ),
                 );
               },
               itemCount: transactions.length,
