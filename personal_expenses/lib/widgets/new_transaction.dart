@@ -1,5 +1,10 @@
+import 'dart:io';
+
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+
+import './adaptive_flat_button.dart';
 
 class NewTransaction extends StatefulWidget {
   final Function addTx;
@@ -47,6 +52,8 @@ class _NewTransactionState extends State<NewTransaction> {
 
   @override
   Widget build(BuildContext context) {
+    final isIOS = Platform.isIOS;
+
     return SingleChildScrollView(
       child: Card(
         elevation: 4,
@@ -59,17 +66,34 @@ class _NewTransactionState extends State<NewTransaction> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
             children: [
-              TextField(
-                decoration: InputDecoration(labelText: 'Title'),
-                controller: _titleController,
-                onSubmitted: (_) => _submitData(),
-              ),
-              TextField(
-                decoration: InputDecoration(labelText: 'Amount'),
-                controller: _amountController,
-                keyboardType: TextInputType.numberWithOptions(decimal: true),
-                onSubmitted: (_) => _submitData(),
-              ),
+              if (isIOS) ...[
+                CupertinoTextField(
+                  placeholder: 'Title',
+                  controller: _titleController,
+                  onSubmitted: (_) => _submitData(),
+                ),
+                SizedBox(
+                  height: 10,
+                ),
+                CupertinoTextField(
+                  placeholder: 'Amount',
+                  controller: _amountController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  onSubmitted: (_) => _submitData(),
+                )
+              ] else ...[
+                TextField(
+                  decoration: InputDecoration(labelText: 'Title'),
+                  controller: _titleController,
+                  onSubmitted: (_) => _submitData(),
+                ),
+                TextField(
+                  decoration: InputDecoration(labelText: 'Amount'),
+                  controller: _amountController,
+                  keyboardType: TextInputType.numberWithOptions(decimal: true),
+                  onSubmitted: (_) => _submitData(),
+                )
+              ],
               Container(
                 height: 70,
                 child: Row(
@@ -79,16 +103,7 @@ class _NewTransactionState extends State<NewTransaction> {
                           ? 'No Date Chosen'
                           : 'Picked Date : ${DateFormat.yMd().format(_selectedDate)}'),
                     ),
-                    FlatButton(
-                      textColor: Theme.of(context).primaryColor,
-                      child: Text(
-                        'Choose Date',
-                        style: TextStyle(
-                          fontWeight: FontWeight.bold,
-                        ),
-                      ),
-                      onPressed: _presentDatePicker,
-                    ),
+                    AdaptiveFlatButton('Choose Date', _presentDatePicker),
                   ],
                 ),
               ),
